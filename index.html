@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speed: Final Boss</title>
+<style>
+:root{--bg:#f3f1ff;--card:#fff;--tx:#1d2238;--mu:#667;--ac:#6c4cf5;--ac2:#ff6a3d;--ok:#1f9d63;--bad:#d64545;--ln:#e3e5ef;--gold:#f5b50a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#110f26;--card:#1d1a3a;--tx:#f1f0ff;--mu:#a29fc9;--ac:#9d86ff;--ac2:#ff8a63;--ok:#3ccf8e;--bad:#ff7070;--ln:#34305e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#110f26;--card:#1d1a3a;--tx:#f1f0ff;--mu:#a29fc9;--ac:#9d86ff;--ac2:#ff8a63;--ok:#3ccf8e;--bad:#ff7070;--ln:#34305e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;justify-content:center;padding:14px}
+.wrap{width:100%;max-width:580px;position:relative}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:20px;margin-bottom:12px}
+h1{font-size:27px;margin:0 0 4px;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:17px;margin:16px 0 8px}
+p{color:var(--mu);line-height:1.5;margin:6px 0}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.go{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;border:0;border-radius:14px;padding:14px;font-weight:700;font-size:17px;margin-top:12px;width:100%}
+.go:disabled{opacity:.4;cursor:default}
+input[type=text],textarea{width:100%;background:var(--bg);color:var(--tx);border:2px solid var(--ln);border-radius:12px;padding:10px 12px}
+textarea{min-height:90px;resize:vertical}
+.rate{margin:10px 0}.rate b{font-size:14px;display:block;margin-bottom:5px}
+.rate .b{display:flex;gap:6px}
+.rate button{flex:1;border:2px solid var(--ln);background:transparent;color:var(--tx);border-radius:10px;padding:8px 2px;font-size:12px}
+.rate button.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 18%,transparent);font-weight:700}
+.arena{text-align:center}
+.boss{font-size:78px;line-height:1.1;display:inline-block;transition:transform .3s}
+.boss.hit{animation:shake .4s}.boss.laugh{animation:bob .5s}.boss.dead{animation:die 1.6s forwards}
+@keyframes shake{25%{transform:translateX(-14px) rotate(-8deg)}75%{transform:translateX(14px) rotate(8deg)}}
+@keyframes bob{50%{transform:scale(1.2)}}
+@keyframes die{60%{transform:rotate(200deg) scale(.6)}100%{transform:rotate(540deg) scale(0);opacity:0}}
+.hpbar{height:16px;background:var(--ln);border-radius:10px;overflow:hidden;margin:6px 0}
+.hpbar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--bad),var(--ac2));transition:width .6s}
+.top{display:flex;justify-content:space-between;font-size:14px;color:var(--mu)}
+.tb{height:6px;background:var(--ln);border-radius:6px;overflow:hidden;margin:10px 0}
+.tb i{display:block;height:100%;background:var(--ac);width:100%;transition:width 1s linear}
+.q{font-size:18px;font-weight:600;margin:6px 0 12px;line-height:1.4}
+.tag{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px}
+.opt{display:block;width:100%;text-align:left;background:transparent;color:var(--tx);border:2px solid var(--ln);border-radius:12px;padding:11px 14px;margin-bottom:8px}
+.opt:hover:not(:disabled){border-color:var(--ac)}
+.opt.sel{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,transparent)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent)}
+.special{border:2px solid var(--gold);box-shadow:0 0 18px color-mix(in srgb,var(--gold) 45%,transparent)}
+.float{position:absolute;left:50%;top:80px;font-weight:800;font-size:24px;pointer-events:none;animation:up 1s forwards}
+@keyframes up{to{transform:translateY(-50px);opacity:0}}
+.big{font-size:40px;font-weight:800;color:var(--ac);margin:0}
+.row{margin:9px 0;font-size:14px}.row span{float:right;color:var(--mu)}
+.row .hpbar{height:9px}.row .hpbar i{background:var(--ac);transition:none}
+.pill{display:inline-block;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:6px}
+.over{background:var(--bad);color:#fff}.under{background:var(--gold);color:#222}.spot{background:var(--ok);color:#fff}
+.tip,.hw{border-left:4px solid var(--ac);padding:8px 12px;margin:8px 0;background:var(--bg);border-radius:0 10px 10px 0;font-size:15px;line-height:1.45}
+.hw.rec{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.tip small,.hw small{display:block;color:var(--mu);font-weight:600}
+.check{display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:15px}
+.check input{margin-top:4px;width:18px;height:18px}
+.hide{display:none}
+.conf{position:fixed;top:-10px;width:9px;height:14px;animation:fall 2.6s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+</style></head>
+<body><div class="wrap">
+
+<div class="card" id="intro">
+  <h1 id="title"></h1>
+  <p>Your team faces the boss. Every correct answer deals damage. The last two attacks are <b>special moves</b>, and they are tough, so think together.</p>
+  <input type="text" id="team" maxlength="24" placeholder="Team name (e.g. The Speedsters)">
+  <h2>First, how confident are you?</h2>
+  <p>1 = not at all, 4 = could teach it. Be honest. We’ll compare after the battle.</p>
+  <div id="rates"></div>
+  <button class="go" id="startBtn" disabled>⚔️ Face the boss!</button>
+</div>
+
+<div class="hide" id="battle">
+  <div class="card arena" id="arena">
+    <div class="boss" id="boss">👾</div>
+    <div class="top"><b id="bname"></b><span id="hptxt"></span></div>
+    <div class="hpbar"><i id="hp"></i></div>
+  </div>
+  <div class="card" id="qcard">
+    <div class="top"><span id="prog"></span><span id="clock"></span></div>
+    <div class="tb" id="tbw"><i id="tb"></i></div>
+    <div class="tag" id="qtag"></div>
+    <div class="q" id="qtext"></div>
+    <div id="body"></div>
+  </div>
+</div>
+
+<div class="hide" id="result">
+  <div class="card" style="text-align:center">
+    <div class="boss" id="rboss"></div>
+    <h1 id="rtitle" style="font-size:24px"></h1>
+    <p class="big" id="rscore"></p><p id="rmsg"></p>
+  </div>
+  <div class="card"><h2 style="margin-top:0">Confidence vs reality</h2><div id="gap"></div></div>
+  <div class="card"><h2 style="margin-top:0">Your next steps</h2><div id="steps"></div></div>
+  <div class="card"><h2 style="margin-top:0">Homework</h2>
+    <button class="go" id="mystery" style="margin-top:0">🎁 Open your mystery homework</button>
+    <div id="hw" class="hide"></div></div>
+  <div class="card"><h2 style="margin-top:0">🏆 Hall of Fame</h2><div id="hof"></div></div>
+  <button class="go" id="again">Battle again</button>
+</div>
+</div>
+<script>
+// ===== TEACHER: edit this block to change the topic =====
+var TOPIC="Speed and Describing Movement",BOSS="😈",BOSSNAME="Speed Demon";
+var AREAS=["One idea: Units of speed","Many ideas: Speed, distance & time","Relate ideas: Distance-time graphs","Extend ideas: Solving problems"];
+var QS=[
+ {c:0,q:"Which of these is NOT a unit of speed?",a:["kg/s","m/s","km/h","cm/s"],r:0},
+ {c:0,q:"A runner moves at 8 m/s. What does 8 m/s mean?",a:["The runner travels 8 metres every second","The runner travels 8 seconds every metre","The runner travels 8 metres in total","The runner takes 8 seconds to start"],r:0},
+ {c:1,q:"A train travels 240 km in 3 hours. What is its average speed?",a:["80 km/h","720 km/h","0.0125 km/h","243 km/h"],r:0},
+ {c:1,q:"A drone flies at 12 m/s for 25 s. How far does it fly?",a:["300 m","37 m","2.1 m","0.48 m"],r:0},
+ {c:2,q:"On a distance-time graph, a straight line sloping upwards means the object is…",a:["moving at a steady speed","stationary","speeding up","moving back to the start"],r:0},
+ {c:3,q:"A graph line rises from (0 s, 0 m) to (10 s, 50 m), is flat until 20 s, then rises to 80 m at 30 s. What does the flat part show?",a:["The object has stopped","The object is moving slowly","The object is moving at 5 m/s","The object is speeding up"],r:0}
+];
+var SP1={c:3,q:"SPECIAL MOVE 1: A girl walks 20 m in 10 s, rests for 10 s, then walks 40 m in 20 s. Select ALL the true statements.",
+ a:["Her speed in the first part is 2 m/s","She is stationary between 10 s and 20 s","Her speed in the last part is 2 m/s","Her average speed for the whole journey is 1.5 m/s","The line is steepest in the last part","She travels 80 m in total"],ok:[0,1,2,3]};
+var SP2={c:2,q:"SPECIAL MOVE 2: A cyclist rides away at a steady speed, stops for a rest, then rides back to the start faster. Describe how you would sketch her distance-time graph.",
+ chk:["Time goes on the x-axis and distance on the y-axis, starting at the origin","A straight sloping line shows the steady speed, then a flat horizontal line shows the rest","The last line slopes back down to zero distance and is steeper to show the faster speed"]};
+var TIPS=["Learn: speed tells us how far something moves in each unit of time. Write 5 units (m/s, km/h, cm/s…) and match each to something that moves.","Learn: speed = distance ÷ time. Use the formula triangle, solve 4 problems and always write the unit.","Learn: time on the x-axis, distance on the y-axis. Steeper means faster, flat means stopped. Sketch a walk, rest, run graph and label each part.","Learn: read distances and times from graphs, then use the formula. Average speed = total distance ÷ total time, and rests count! Solve 3 multi-stage journeys."];
+var HW=[["Challenge","Plan a 3-stage journey (moving, stopped, moving faster). Sketch the distance-time graph, calculate the speed of each stage and the average speed."],["Practice","Write 5 speed, distance and time problems with units and 1 graph question, with answers. Swap with a partner and mark each other’s."],["Rebuild","Make a one-page summary: units of speed with examples, the formula triangle, and a labelled graph showing steady speed, stopped and faster."]];
+var TIME=30,NORM=10,SPECIAL=20;
+// ========================================================
+var $=function(i){return document.getElementById(i)};
+var HK="bossHOF_"+TOPIC,conf=[],hp,idx,score,tmr,left,locked;
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){["intro","battle","result"].forEach(function(x){$(x).classList.toggle("hide",x!==id)})}
+$("title").textContent=TOPIC+": Final Boss";
+(function(){var h="";AREAS.forEach(function(a,i){h+='<div class="rate"><b>'+a+'</b><div class="b">'+["1 Unsure","2 A bit","3 Good","4 Expert"].map(function(l,k){return'<button data-i="'+i+'" data-v="'+(k+1)+'">'+l+'</button>'}).join("")+'</div></div>'});$("rates").innerHTML=h})();
+$("rates").onclick=function(e){var b=e.target.closest("button");if(!b)return;conf[+b.dataset.i]=+b.dataset.v;
+ [].forEach.call(b.parentNode.children,function(x){x.classList.remove("on")});b.classList.add("on");
+ $("startBtn").disabled=AREAS.some(function(_,i){return !conf[i]})};
+function begin(){
+  hp=100;idx=0;score=AREAS.map(function(){return{g:0,t:0}});
+  $("boss").textContent=BOSS;$("boss").className="boss";$("bname").textContent=BOSSNAME;
+  setHp();show("battle");next();
+}
+function setHp(){$("hp").style.width=Math.max(hp,0)+"%";$("hptxt").textContent=Math.max(Math.round(hp),0)+" / 100 HP"}
+function pop(t,c){var f=document.createElement("div");f.className="float";f.textContent=t;f.style.color=c;$("arena").parentNode.appendChild(f);setTimeout(function(){f.remove()},1000)}
+function dmg(area,got,max){
+  score[area].g+=got;score[area].t+=max;hp-=got;setHp();
+  var b=$("boss");b.className="boss";void b.offsetWidth;
+  if(got>0){b.classList.add("hit");pop("−"+Math.round(got),"var(--ok)")}else{b.classList.add("laugh");pop("MISS","var(--bad)")}
+}
+function next(){
+  clearInterval(tmr);locked=false;
+  var total=QS.length+2;$("prog").textContent="Attack "+(idx+1)+" of "+total;
+  $("qcard").classList.remove("special");
+  if(idx<QS.length)normal(QS[idx]);else if(idx===QS.length)multi();else if(idx===QS.length+1)open();else end();
+}
+function normal(q){
+  $("qtag").textContent=AREAS[q.c].toUpperCase();$("qtext").textContent=q.q;$("tbw").classList.remove("hide");
+  var box=$("body");box.innerHTML="";left=TIME;clock();
+  tmr=setInterval(function(){left--;clock();if(left<=0)resolve(null,q)},1000);
+  shuffle(q.a.map(function(t,i){return{t:t,i:i}})).forEach(function(o){
+    var b=document.createElement("button");b.className="opt";b.textContent=o.t;b.dataset.r=o.i===q.r?1:0;
+    b.onclick=function(){resolve(b,q)};box.appendChild(b)});
+}
+function clock(){$("clock").textContent="⏱ "+left+"s";$("tb").style.width=(left/TIME*100)+"%"}
+function resolve(btn,q){
+  if(locked)return;locked=true;clearInterval(tmr);
+  var ok=btn&&btn.dataset.r==="1";
+  if(btn)btn.classList.add(ok?"ok":"no");
+  [].forEach.call(document.querySelectorAll(".opt"),function(b){b.disabled=true;if(b.dataset.r==="1")b.classList.add("ok")});
+  dmg(q.c,ok?NORM:0,NORM);idx++;setTimeout(next,ok?800:1500);
+}
+function multi(){
+  $("qcard").classList.add("special");$("tbw").classList.add("hide");$("clock").textContent="No timer";
+  $("qtag").textContent="⭐ "+AREAS[SP1.c].toUpperCase();$("qtext").textContent=SP1.q;
+  var box=$("body");box.innerHTML="";
+  SP1.a.forEach(function(t,i){var b=document.createElement("button");b.className="opt";b.textContent=t;b.dataset.i=i;b.onclick=function(){if(!locked)b.classList.toggle("sel")};box.appendChild(b)});
+  var go=document.createElement("button");go.className="go";go.textContent="🔥 Launch special move";
+  go.onclick=function(){
+    if(locked)return;locked=true;var net=0;
+    [].forEach.call(box.querySelectorAll(".opt"),function(b){
+      var isOk=SP1.ok.indexOf(+b.dataset.i)>=0,sel=b.classList.contains("sel");
+      if(sel&&isOk){net++;b.classList.add("ok")}else if(sel){net--;b.classList.add("no")}else if(isOk)b.classList.add("ok");b.disabled=true});
+    go.remove();dmg(SP1.c,Math.max(net,0)/SP1.ok.length*SPECIAL,SPECIAL);idx++;
+    var n=document.createElement("button");n.className="go";n.textContent="Next →";n.onclick=next;box.appendChild(n);
+  };box.appendChild(go);
+}
+function open(){
+  $("qcard").classList.add("special");$("tbw").classList.add("hide");$("clock").textContent="No timer";
+  $("qtag").textContent="⭐ "+AREAS[SP2.c].toUpperCase();$("qtext").textContent=SP2.q;
+  var box=$("body");box.innerHTML='<textarea id="ans" placeholder="Discuss with your team, then type your explanation…"></textarea>';
+  var go=document.createElement("button");go.className="go";go.textContent="⚡ Cast explanation";go.disabled=true;
+  $("ans").oninput=function(){go.disabled=$("ans").value.trim().length<20};
+  go.onclick=function(){
+    $("ans").disabled=true;go.remove();
+    var h='<p><b>Be honest:</b> tick each idea your answer included.</p>';
+    SP2.chk.forEach(function(t,i){h+='<label class="check"><input type="checkbox" data-k="'+i+'"><span>'+esc(t)+'</span></label>'});
+    var d=document.createElement("div");d.innerHTML=h;box.appendChild(d);
+    var c=document.createElement("button");c.className="go";c.textContent="Confirm damage";
+    c.onclick=function(){var n=box.querySelectorAll("input:checked").length;
+      dmg(SP2.c,n/SP2.chk.length*SPECIAL,SPECIAL);idx++;c.disabled=true;setTimeout(next,1400)};
+    box.appendChild(c);
+  };box.appendChild(go);
+}
+function confetti(){var c=["#6c4cf5","#ff6a3d","#f5b50a","#1f9d63","#3da5ff"];for(var i=0;i<56;i++){var d=document.createElement("div");d.className="conf";d.style.left=Math.random()*100+"vw";d.style.background=c[i%5];d.style.animationDelay=Math.random()*.9+"s";document.body.appendChild(d);setTimeout(function(x){x.remove()},3600,d)}}
+function end(){
+  var left_=Math.max(Math.round(hp),0),dealt=100-left_,won=left_<=0;
+  var pct=score.map(function(s){return s.t?Math.round(s.g/s.t*100):0});
+  show("result");$("rboss").textContent=BOSS;$("rboss").className="boss"+(won?" dead":"");
+  $("rtitle").textContent=won?"BOSS DEFEATED!":left_<=15?"So close! "+BOSSNAME+" is barely standing":left_<=40?BOSSNAME+" is badly wounded":BOSSNAME+" survives… for now";
+  $("rscore").textContent=dealt+" damage dealt";
+  $("rmsg").textContent=won?"Your team has shown real mastery today.":"Every point of damage is real progress. Use your next steps to finish the job.";
+  var g="",conf_,steps="";
+  AREAS.forEach(function(a,i){
+    var cp=conf[i]*25,d=cp-pct[i],lab=d>30?'<span class="pill over">Overconfident</span>':d<-30?'<span class="pill under">Underrated yourself</span>':'<span class="pill spot">Spot on</span>';
+    g+='<div class="row"><b>'+a+'</b>'+lab+'<span>felt '+cp+'% · showed '+pct[i]+'%</span><div class="hpbar"><i style="width:'+pct[i]+'%"></i></div></div>';
+    if(pct[i]<70)steps+='<div class="tip"><small>'+a+'</small>'+TIPS[i]+'</div>';
+  });
+  $("gap").innerHTML=g;
+  $("steps").innerHTML=steps||'<div class="tip"><small>All areas strong</small>Try the challenge task: explain one area to a classmate without notes.</div>';
+  var avg=pct.reduce(function(a,b){return a+b},0)/4,rec=avg>=75?0:avg>=45?1:2,weak=pct.indexOf(Math.min.apply(null,pct));
+  var h="";HW.forEach(function(x,i){h+='<div class="hw'+(i===rec?" rec":"")+'"><small>'+(i===rec?"⭐ Recommended for you · ":"")+x[0]+'</small>'+x[1]+(i===rec?" <i>Focus area: "+AREAS[weak]+".</i>":"")+'</div>'});
+  $("hw").innerHTML=h;$("hw").classList.add("hide");$("mystery").classList.remove("hide");
+  var name=$("team").value.trim()||"Team Mystery",list=[];
+  try{list=JSON.parse(localStorage.getItem(HK)||"[]")}catch(e){}
+  list.push({n:name,d:dealt});list.sort(function(a,b){return b.d-a.d});list=list.slice(0,5);
+  try{localStorage.setItem(HK,JSON.stringify(list))}catch(e){}
+  $("hof").innerHTML=list.map(function(x,i){return'<div class="row">'+["🥇","🥈","🥉","4.","5."][i]+" "+esc(x.n)+"<span>"+x.d+" damage</span></div>"}).join("")+'<p>Saved on this device only.</p>';
+  if(dealt>=60)confetti();
+}
+$("mystery").onclick=function(){$("mystery").classList.add("hide");$("hw").classList.remove("hide");confetti()};
+$("startBtn").onclick=begin;$("again").onclick=function(){show("intro")};
+</script></body></html>
